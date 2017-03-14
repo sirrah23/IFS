@@ -1,68 +1,72 @@
 var ifs;
-var i = 0;
 var scl = 500;
-var LIM = 10000;
-var eq1 = {
-	a:-0.4,
-	b:0.0,
-	c:0.0,
-	d:-0.4,
-	e:-1.0,
-	f:0.1,
-};
-var eq2 = {
-	a:0.76,
-	b:-0.4,
-	c:0.4,
-	d:0.76,
-	e:0.0,
-	f:0.0,
-};
-var eqs = [eq1, eq2];
+var file_equations;
+var eqs = [];
+
+function preload(){
+	 file_equations = loadStrings('./data/dragon.txt');
+	 //file_equations = loadStrings('./data/fern.txt');
+}
+
 
 function setup() {
   createCanvas(800, 800);
+  file_equations.forEach(function(file_eq){
+	eqs.push(generateEquation(file_eq));
+  });
   ifs = new IFS(1, 1, eqs);
 }
 
 function draw() {
-	ifs.iterate();
-	ifs.show();
-	// noLoop();
+	for(var i = 0; i < 100; i++){
+		ifs.iterate();
+		ifs.show();
+	}
 }
 
 function IFS(x, y, eqs){
 	this.pt = createVector(x, y);
 	this.eqs = eqs;
-	// this.pts = [];
 }
 
 IFS.prototype.iterate = function(){
 	var x, y;
-	var r = Math.floor(random(eqs.length));
-	var eq = eqs[r]; 
+	var eq = this.getEq(); 
 	x = eq.a*this.pt.x + eq.b*this.pt.y + eq.e;
 	y = eq.c*this.pt.x + eq.d*this.pt.y + eq.f;
 	this.pt.x = x; this.pt.y = y;
 }
 
-// IFS.prototype.iterLoop = function(LIM){
-// 	for(var i = 0; i < LIM; i++){
-// 		this.iterate();
-// 		this.pts.push(this.pt);
-// 	}
-// }
-
 IFS.prototype.show = function(){
-	var x,y;
+	//TODO: Inheritance for different displays
 	strokeWeight(2);
-	x = scl*this.pt.x
-	y = scl*this.pt.y
-	//x = map(x, -scl, scl, 0, width);
-	//y = map(y, -scl, scl, 0, height);
-	// console.log(x,y);
 	push();
-	translate(width/2, height/2)
-	point(x, y);	
-	pop();
+	//translate(width/2, height); FERN
+	translate(width/2, height/2);
+	point(this.pt.x * 300, this.pt.y * -300);
+	//point(this.pt.x * 50, this.pt.y * -50); FERN
+	pop();	
+}
+
+IFS.prototype.getEq = function(){
+	var r = random();
+	var eq;
+	for(var i = 0; i < this.eqs.length; i++){
+		eq = this.eqs[i];
+		if(r < eq.p){
+			return eq;
+		}
+		r -= eq.p
+	}
+}
+
+function generateEquation(eqStr){
+	eqStr = eqStr.split(',')
+	var keys = ['a', 'b', 'c', 'd', 'e', 'f', 'p'];
+	var nums = eqStr.map(function(x){return Number(x);});
+	var eq = {};
+	for(var i = 0; i < nums.length; i++){
+		eq[keys[i]] = nums[i];
+	}
+	return eq;
 }
