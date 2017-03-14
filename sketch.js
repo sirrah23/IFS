@@ -2,7 +2,6 @@
 * Draw a random fractal to the screen
 * via an iterated function system
 */
-
 var ifs;
 var fractalObj;
 var file_equations;
@@ -16,6 +15,14 @@ function preload(){
 		{
 			"file" : "./data/fern.txt",
 			"obj" : Fern,
+		},
+		{
+			"file" : "./data/koch.txt",
+			"obj" : Koch,
+		},
+		{
+			"file" : "./data/menger.txt",
+			"obj" : Menger,
 		},
 	];
 	var pair = File_Obj_Pairs[Math.floor(random(File_Obj_Pairs.length))];
